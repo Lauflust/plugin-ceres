@@ -7,6 +7,7 @@ use Ceres\Caching\SideNavigationCacheSettings;
 use Ceres\Config\CeresConfig;
 use Ceres\Contexts\CategoryContext;
 use Ceres\Contexts\CategoryItemContext;
+use Ceres\Contexts\CheckoutContext;
 use Ceres\Contexts\GlobalContext;
 use Ceres\Contexts\ItemSearchContext;
 use Ceres\Contexts\ItemWishListContext;
@@ -20,6 +21,7 @@ use Ceres\Hooks\CeresAfterBuildPlugins;
 use IO\Extensions\Functions\Partial;
 use IO\Helper\CategoryKey;
 use IO\Helper\CategoryMap;
+use IO\Helper\RouteConfig;
 use IO\Helper\TemplateContainer;
 use IO\Services\ContentCaching\Services\Container;
 use IO\Services\ItemSearch\Helper\ResultFieldTemplate;
@@ -47,14 +49,14 @@ class TemplateServiceProvider extends ServiceProvider
         'tpl.item'                          => ['Item.SingleItemWrapper',                 SingleItemContext::class],                 // provide template to use for single items
         'tpl.basket'                        => ['Basket.Basket',                          GlobalContext::class],                       // provide template to use for basket
         'tpl.checkout'                      => ['Checkout.CheckoutView',                  GlobalContext::class],               // provide template to use for checkout
-        'tpl.my-account'                    => ['MyAccount.MyAccount',                    GlobalContext::class],                 // provide template to use for my-account
+        'tpl.my-account'                    => ['MyAccount.MyAccountView',                GlobalContext::class],                 // provide template to use for my-account
         'tpl.confirmation'                  => ['Checkout.OrderConfirmation',             OrderConfirmationContext::class],          // provide template to use for confirmation
         'tpl.login'                         => ['Customer.Login',                         GlobalContext::class],                      // provide template to use for login
         'tpl.register'                      => ['Customer.Register',                      GlobalContext::class],                   // provide template to use for register
         'tpl.guest'                         => ['Customer.Guest',                         GlobalContext::class],                      // provide template to use for guest
         'tpl.password-reset'                => ['Customer.ResetPassword',                 PasswordResetContext::class],              // provide template to use for password-reset
         'tpl.contact'                       => ['Customer.Contact',                       GlobalContext::class],                    // provide template to use for contact
-        'tpl.search'                        => ['ItemList.ItemListView',                  ItemSearchContext::class],               // provide template to use for item search
+        'tpl.search'                        => ['Category.Item.CategoryItem',             ItemSearchContext::class],               // provide template to use for item search
         'tpl.wish-list'                     => ['WishList.WishListView',                  ItemWishListContext::class],               // provide template to use for wishlist
         'tpl.order.return'                  => ['OrderReturn.OrderReturnView',            OrderReturnContext::class],         // provide template to use for order return
         'tpl.order.return.confirmation'     => ['OrderReturn.OrderReturnConfirmation',    GlobalContext::class], // provide template to use for order return confirmation
@@ -82,17 +84,35 @@ class TemplateServiceProvider extends ServiceProvider
         $eventDispatcher->listen('IO.tpl.*', function (TemplateContainer $templateContainer, $templateData = []) {
             if ( !$templateContainer->hasTemplate() )
             {
-                $templateName = self::$templateKeyToViewMap[$templateContainer->getTemplateKey()][0];
-                $templateContainer->setTemplate('Ceres::' . $templateName);
+                $template = $templateContainer->getTemplateKey();
+                if ( $template === 'tpl.checkout' && RouteConfig::getCategoryId(RouteConfig::CHECKOUT) > 0 )
+                {
+                    $templateContainer->setTemplate('Ceres::Checkout.CheckoutCategory');
+                }
+                else
+                {
+                    $templateContainer->setTemplate('Ceres::' . self::$templateKeyToViewMap[$template][0]);
+                }
             }
         }, self::EVENT_LISTENER_PRIORITY);
-        
+
         $eventDispatcher->listen('IO.ctx.*', function (TemplateContainer $templateContainer, $templateData = []) {
-            $templateContextClass = self::$templateKeyToViewMap[$templateContainer->getTemplateKey()][1];
+            $template = $templateContainer->getTemplateKey();
+
+            if ( $template === 'tpl.checkout' && RouteConfig::getCategoryId(RouteConfig::CHECKOUT) > 0 )
+            {
+                $templateContextClass = CheckoutContext::class;
+            }
+            else
+            {
+                $templateContextClass = self::$templateKeyToViewMap[$template][1];
+            }
+
             if(!strlen($templateContextClass))
             {
                 $templateContextClass = GlobalContext::class;
             }
+
             $templateContainer->setContext( $templateContextClass );
         }, self::EVENT_LISTENER_PRIORITY);
 

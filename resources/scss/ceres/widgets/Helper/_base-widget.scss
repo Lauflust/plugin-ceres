@@ -22,16 +22,11 @@
         &.widget-grid
         {
             margin-bottom: 0;
-
-            + .widget-grid
-            {
-                margin-top: 1rem;
-            }
         }
 
         .widget-inner
         {
-            .widget
+            .widget:not(.widget-grid)
             {
                 margin-bottom: 1rem;
             }
@@ -82,4 +77,5 @@
 
 .widget-editable-min-height {
     min-height: 40px;
+    padding-bottom: 0.1px;
 }

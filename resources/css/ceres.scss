@@ -290,7 +290,7 @@ $custom-file-border-color:                      #ddd !default;
 $custom-file-box-shadow:                        inset 0 .2rem .4rem rgba(0,0,0,.05) !default;
 $custom-file-button-bg:                         #eee !default;
 
-$form-check-input-margin-y:                     .1rem;
+$form-check-input-margin-y:                     .2rem;
 
 // This allows us to at a glance determine relative layers of our application and prevents bugs
 // arrising from arbitrary z-index values. Do not edit the z-index scale! Only add application
@@ -368,6 +368,16 @@ $live-shopping-padding-y:           1rem;
 $component-active-bg:               $primary !default;
 $component-active-color:            color-yiq($component-active-bg) !default;
 
+// Shopbuilder
+$shop-builder-colors:
+  (
+    "primary":    $primary,
+    "secondary":  $secondary,
+    "success":    $success,
+    "info":       $info,
+    "warning":    $warning,
+    "danger":     $danger
+  );
 
 // ==========================================================================
 // External Libs
@@ -10664,6 +10674,10 @@ body .wrapper-main{
     i.fa-search {
         font-size: 10em;
     }
+    i.fa-home {
+        margin-left: 5px;
+        margin-top: 2px;
+    }
     .default-not-found {
         background-color: rgb(247, 247, 249);
     }
@@ -10754,12 +10768,21 @@ a:active {
   white-space: normal;
 }
 
+.is_stuck {
+    z-index: 1;
+}
+
+@each $color, $value in $theme-colors {
+    @include bg-variant(".bg-#{$color}", $value);
+    .bg-#{$color} {
+        @include context-bg($value);
+    }
+}
 html {
 	font-size: $font-size-root;
 }
 
 body {
-
 	background-color: $gray-lightest;
 
 	> #vue-app,
@@ -10770,15 +10793,10 @@ body {
 		&>.wrapper-top, &>.wrapper-left, &>.wrapper-right, &>.wrapper-bottom {
 			position 	: absolute;
 			z-index 	: $zIndex-8;
-
-			.wrapper-inner{
-				
-			}
 		} 
 
 		.wrapper-main{
 			position: relative;
-			//z-index: $zIndex-1;
 		}
 		
 		.wrapper-top {
@@ -10906,19 +10924,12 @@ body {
 			}
 		}
 
-		@include media-breakpoint-up(sm){
-		}
-
 		@include media-breakpoint-up(md){
 			&.open-right{
 				.wrapper-right{
 					width: $aside-columns-width;
 				}
 			}
-		}
-
-		@include media-breakpoint-up(lg){
-			
 		}
 	}
 }
@@ -11091,6 +11102,13 @@ button:focus {
 	&.btn-m-r {
 		margin-right: 10px;
 	}
+
+	&.btn-block {
+		> .fa {
+			line-height: inherit;
+		}
+	}
+
 }
 
 .btn-right {
@@ -12938,7 +12956,6 @@ $border-width: 1px;
 {
     -webkit-transition: all .3s ease;
     transition: all .3s ease;
-    cursor: pointer;
     margin-bottom: .75rem;
 
     &.error
@@ -12963,6 +12980,9 @@ $border-width: 1px;
         {
             color: $white !important;
         }
+    }
+    .form-check-input {
+        cursor: pointer;
     }
 }
 
@@ -14277,7 +14297,8 @@ body.menu-is-visible {
 						padding-bottom		: 1em;
 
 						>li {
-							padding	: 0 1.5em;
+							// 0.1px for rendering fix
+							padding	: 0.1px 1.5em;
 							line-height		: 170%;
 							text-align		: left;
 		
@@ -16809,7 +16830,6 @@ html.ie .basket-preview-hover {
   }
 }
 .cmp-hero{
-	
 
 	.hero-category{
 		position: relative;
@@ -16846,8 +16866,6 @@ html.ie .basket-preview-hover {
 			}
 		}
 	}
-
-
 
 	.hero-main{
 		margin-bottom: 1rem;
@@ -16958,10 +16976,6 @@ html.ie .basket-preview-hover {
 		}
 	}
 
-	@include media-breakpoint-up(sm){
-
-	}
-
 	@include media-breakpoint-up(md){
 		.hero-main{
 			.hero-category{
@@ -17068,10 +17082,12 @@ html.ie .basket-preview-hover {
 			content: "";
 			font-family: FontAwesome;
 			position: absolute;
-			width: 100%;
-			height: 100%;
-			top: 0;
-			left: 0;
+			width: auto;
+			height: auto;
+			top: 50%;
+			left: 50%;
+			bottom: 50%;
+			right: 50%;
 			display: -webkit-box;
 			display: -ms-flexbox;
 			display: flex;
@@ -17120,6 +17136,19 @@ html.ie .basket-preview-hover {
 	}
 }
 
+/* IE Compatibility */
+html.ie {
+	.component-loading {
+		&.with-icon {
+			&:after {
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+			}
+		}
+	}
+}
 .qty-box {
     display: -webkit-box;
     display: -ms-flexbox;
@@ -17377,9 +17406,9 @@ html.ie .basket-preview-hover {
 		vertical-align:top;
 		margin-top: -1px;
 		margin-left: -1px;
-		background-color: $card-bg;
 
-		& > input:disabled ~ label {
+		& > input:disabled ~ label,
+		& > input:disabled ~ .label {
 			opacity: .5;
 			cursor: not-allowed;
 		}
@@ -17392,35 +17421,43 @@ html.ie .basket-preview-hover {
 			transition: box-shadow 2s, -webkit-box-shadow 2s;
 		}
 
-		input:checked + label{
+		input:checked + label,
+		input:checked + .label {
 			-webkit-box-shadow: inset 0 0 0 .1rem $primary;
 			        box-shadow: inset 0 0 0 .1rem $primary;
 		}
 
-		label{
+		label,
+		.label {
 			border: 1px solid $gray-lighter;
 			border-radius: $border-radius;
 			cursor: pointer;
+			height: 5rem;
 			padding: .5em;
 			margin-bottom: 0;
 			width:100%;
 			overflow: hidden;
+			background-color: $card-bg;
+			display: -webkit-box;
+			display: -ms-flexbox;
+			display: flex;
+			-webkit-box-align: center;
+			    -ms-flex-align: center;
+			        align-items: center;
+		}
+
+		&.has-error label,
+		&.has-error .label {
+			-webkit-box-shadow: inset 0 0 0 .1rem theme-color-level("danger", 6);
+			        box-shadow: inset 0 0 0 .1rem theme-color-level("danger", 6);
+			color: theme-color-level("danger", 6);
+			background-color: theme-color-level("danger", -10);
 		}
 
 		.content,
 		.icon{
 			display: inline-block;
 			vertical-align: middle;
-		}
-
-		.icon{
-			width: 3.5rem;
-			height: 3.5rem;
-
-			img{
-				width: 100%;
-				height: auto;
-			}
 		}
 
 		.content{
@@ -17439,7 +17476,11 @@ html.ie .basket-preview-hover {
 		}
 		.icon{
 			width: 4rem;
-			height: 4rem;
+
+			img{
+				width: 100%;
+				height: auto;
+			}
 		}
 	}
 
@@ -17782,13 +17823,6 @@ html.ie .basket-preview-hover {
     max-width: none;
     position: relative;
     width: 100%;
-
-    .parallax-text-wrapper {
-        @include media-breakpoint-up(xl){
-            margin-left: -15px;
-            margin-right: -15px;
-        }
-    }
         
     .parallax-text-container {
         position: inherit;
@@ -17860,6 +17894,13 @@ html.ie .basket-preview-hover {
                 }
             }
         }
+    }
+}
+
+/* IOS compatibility */
+html.ios {
+    .parallax-img-container .parallax-img-container-inner[style^='background-image'] {
+        background-size: contain;
     }
 }
 
@@ -19202,6 +19243,29 @@ html.ie .basket-preview-hover {
     }
 }
 
+.widget-provider-select
+{
+    @each $color, $value in $shop-builder-colors
+    {
+        &.widget-#{$color}
+        {
+            input:checked + .provider-select-label
+            {
+                -webkit-box-shadow: inset 0 0 0 0.1rem $value;
+                        box-shadow: inset 0 0 0 0.1rem $value;   
+            }
+        }
+    }
+}
+
+.widget-shipping-privacy-check
+{
+    .widget-placeholder
+    {
+        padding-bottom: 50%;
+    }
+}
+
 .widget-image-box
 {
     @include media-breakpoint-only(xs) {
@@ -19426,15 +19490,6 @@ html.ie .basket-preview-hover {
 
 .widget-grid .widget-image-box-fullwidth .widget-inner .widget-caption h2 {
     font-size: 2rem;
-}
-
-/* Compatibility for IE */
-/* display img with optimal aspect ratio */
-html.ie {
-    .widget-image-box .img-cover {
-        min-height: auto;
-        min-width: auto;
-    }
 }
 @mixin widget-carousel-variant($parent, $color)
 {
@@ -19786,9 +19841,9 @@ html.ie {
     }
 }
 
-@include media-breakpoint-down(xs)
+.widget-live-shopping
 {
-    .widget-live-shopping
+    @include media-breakpoint-down(xs)
     {
         .thumb-inner
         {
@@ -19816,36 +19871,11 @@ html.ie {
                 }
             }
         }
-    }   
-}
-
-.live-shopping-placeholder
-{
-    width: 100%;
-    padding-bottom: 150%;
-    position: relative;
-    background-color: $gray-lighter;
-
-    > div
-    {
-        position: absolute;
-        top: 50%;
-        -webkit-transform: translateY(-50%);
-                transform: translateY(-50%);
-        text-align: center;
-        padding: $spacer;
-        width: 100%;
     }
 
-    .title
+    .widget-placeholder
     {
-        font-weight: bold;
-        font-size: 1.3rem;
-    }
-
-    .description
-    {
-        font-style: italic;
+        padding-bottom: 150%;
     }
 }
 
@@ -19963,6 +19993,23 @@ html.ie {
         @include widget-bg-variant($danger);
     }
 }
+.widget-address
+{
+    @each $color, $value in $shop-builder-colors
+    {
+        &.widget-#{$color}
+        {
+            .btn-primary
+            {
+                @extend .btn-#{$color};
+            }
+            .btn-outline-primary
+            {
+                @extend .btn-outline-#{$color};
+            }
+        }
+    }
+}
 .widget-grid
 {
     > .widget-inner
@@ -20072,6 +20119,14 @@ html.ie {
     }
 }
 
+.checkout
+{
+    .widget-grid > .widget-inner > div
+    {
+        background-color: $white;
+        padding: $spacer;
+    }
+}
 .widget
 {
     margin-bottom: 2rem;
@@ -20096,16 +20151,11 @@ html.ie {
         &.widget-grid
         {
             margin-bottom: 0;
-
-            + .widget-grid
-            {
-                margin-top: 1rem;
-            }
         }
 
         .widget-inner
         {
-            .widget
+            .widget:not(.widget-grid)
             {
                 margin-bottom: 1rem;
             }
@@ -20156,6 +20206,37 @@ html.ie {
 
 .widget-editable-min-height {
     min-height: 40px;
+    padding-bottom: 0.1px;
+}
+
+.widget-placeholder
+{
+    width: 100%;
+    padding-bottom: 100%;
+    position: relative;
+    background-color: $gray-lighter;
+
+    > div
+    {
+        position: absolute;
+        top: 50%;
+        -webkit-transform: translateY(-50%);
+                transform: translateY(-50%);
+        text-align: center;
+        padding: $spacer;
+        width: 100%;
+    }
+
+    .title
+    {
+        font-weight: bold;
+        font-size: 1.3rem;
+    }
+
+    .description
+    {
+        font-style: italic;
+    }
 }
 
 

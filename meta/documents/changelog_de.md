@@ -1,5 +1,62 @@
 # Release Notes für Ceres
 
+## v3.1.1 (2019-03-04) <a href="https://github.com/plentymarkets/plugin-ceres/compare/3.1.0...3.1.1" target="_blank" rel="noopener"><b>Übersicht aller Änderungen</b></a>
+
+### Behoben
+
+- Im Bilderbox-Widget werden Varianten wieder korrekt dargestellt. Danke an daniel-mannheimer.
+- Durch einen Fehler konnten Artikel unter gewissen Umständen nicht in den Warenkorb gelegt werden. Dies wurde behoben.
+
+## v3.1.0 (2019-02-25) <a href="https://github.com/plentymarkets/plugin-ceres/compare/3.0.2...3.1.0" target="_blank" rel="noopener"><b>Übersicht aller Änderungen</b></a>
+
+### TODO
+
+- Für eine sichere Verwendung des Google reCAPTCHA im Kontaktformular sollte der von Google bereitgestellte geheime Webseiten-Schlüssel in den Ceres-Einstellungen hinterlegt werden.
+
+### Hinzugefügt
+
+- Der Komponente SingleItem wurde eine berechnete Eigenschaft hinzugefügt um Varianteneigenschaften eines Artikels auszulesen. Dadurch können diese beispielsweise in einem Theme ausgegeben werden.
+- Varianteneigenschaften vom Typ **Keine** können nun im Bestellprozess am Warenkorb angezeigt werden.
+- Die URL-Picker-Komponente kann nun in ShopBuilder-Widgets verwendet werden. Dadurch können beispielsweise Linkziele für Artikelbilder definiert werden. Der URL-Picker steht für die Bilderbox, das Bilderkarussell und die Linkliste zur Verfügung.
+- Die Abstände des Trennlinien-Widgets können jetzt eingestellt werden.
+- Es wurde eine Checkout-Vorlage für den ShopBuilder erstellt, die alle für den Bestellvorgang nötigen Widgets beinhaltet und das Design der Ceres-Kaufabwicklung abbildet.
+- Das Shop-Builder Widget für Artikellisten kann nun Artikel nach Hersteller filtern.
+
+### Geändert
+
+- ShopBuilder-Inhalte der Kategorie für Versandinformationen werden jetzt auch im entsprechenden Overlay auf Artikel- und Kategorieseiten angezeigt.
+- Die Einstellung zum Verknüpfen einer Kategorie zur Darstellung von zusätzlichen Versandinformationen wurde in die globalen Einstellungen des ShopBuilders überführt.
+- Es wurden Übersetzungen hinzugefügt, um die Formatierung von Streichpreisen einstellbar zu machen.
+- Vor dem Senden des Kontaktformulars wird das Google reCAPTCHA über den geheimen Webseiten-Schlüssen verifiziert.
+
+### Behoben
+
+- Durch einen Fehler wurden artikelabhängige Gutscheine nicht entfernt wenn der betreffende Artikel aus dem Warenkorb entfernt wurde. Dies wurde behoben.
+- Die URLs in der Sidebar-Navigation werden jetzt in allen Sprachen korrekt generiert.
+- Wenn aufgrund von Beschränkungen kein Versandprofil ausgewählt werden kann, wird nun eine entsprechende Fehlermeldung im Checkout ausgegeben und der Bestellabschluss verhindert.
+- Durch einen Fehler wurde die Anrede in der Adresseingabe für verschiedene Lieferländer synchron dargestellt, obwohl sie für diese unterschiedlich konfiguriert wurde. Dies wurde behoben.
+- Durch einen Fehler wurde die Höhe des Headers für mobile Geräte nicht korrekt berechnet. Dies wurde behoben.
+- Durch einen Darstellungsfehler wurde der Bestell-Button im Checkout überlagert. Dies wurde behoben.
+- Durch einen Darstellungsfehler wurde das Bilderbox-Widget im Internet Explorer fehlerhaft dargestellt. Dies wurde behoben.
+- Durch einen Fehler funktionierte die Seitennummerierung im MyAccount-Bereich nicht richtig. Dies wurde behoben.
+- Bei zusätzlichen Mandanten kam es zu Fehlern bei der Seitennummerierung von Kategorieseiten. Dieses Verhalten wurde behoben.
+- Auf Touch-Geräten wurden Klicks auf Links im Megamenü nicht registriert. Dieses Verhalten wurde behoben.
+- Durch einen Fehler führten Ladeanimationen zum Einblenden des Scrollbalkens. Dies wurde behoben.
+- Beim Wechsel der Variante in der Artikelansicht wurden Änderungen an der Minimal- und Maximalbestellmenge nicht übernommen. Dies wurde behoben.
+- Nach dem Absenden des Kontaktformulars wird die Google reCAPTCHA-Abfrage nun zurückgesetzt, um ein erneutes Senden des Formulars zu ermöglichen.
+- Es können nun Kategorien in der Vorschau angezeigt werden, die nicht mit dem Mandanten verknüpft sind.
+- Das Bestellmerkmal vom Typ **Kommazahl** funktionierte nicht korrekt. Dieses Verhalten wurde behoben.
+- Durch einen Fehler wurde der Name einer Kategorie auf der Kategorieseite zu weit links angezeigt. Dies wurde behoben.
+- Durch einen Fehler wurden Kategoriebilder auf iOS-Endgeräten zu groß dargestellt. Dies wurde behoben.
+- Artikel ohne Preis können in der Admin-Vorschau nicht mehr in den Warenkorb gelegt werden.
+
+## v3.0.2 (2019-02-07) <a href="https://github.com/plentymarkets/plugin-ceres/compare/3.0.1...3.0.2" target="_blank" rel="noopener"><b>Übersicht aller Änderungen</b></a>
+
+### Behoben
+
+- Verkaufspreise werden in der Kategorieansicht und in der Artikeleinzelansicht jetzt nicht mehr zusätzlich über ElasticSearch geladen.
+- Die minimale und maximale Anzahl an Artikeln und Varianten führte teilweise bei Änderungen an Artikeln im Warenkorb zu Fehlern. Dieses Verhalten wurde behoben.
+
 ## v3.0.1 (2019-01-24) <a href="https://github.com/plentymarkets/plugin-ceres/compare/3.0.0...3.0.1" target="_blank" rel="noopener"><b>Übersicht aller Änderungen</b></a>
 
 ### Behoben
