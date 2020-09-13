@@ -1,6 +1,7 @@
 {
+  "parser": "babel-eslint",
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": 2018,
     "sourceType": "module",
     "ecmaFeatures": {
         "jsx": true
@@ -12,6 +13,11 @@
     "$"     : true
   },
   "rules"  : {
+    "no-var"                  : "warn",
+    "no-invalid-this"         : "warn",
+    "prefer-promise-reject-errors": "warn",
+    "prefer-rest-params"      : "warn",
+    "arrow-parens"            : "off",
     // PLENTY
     "no-console"              : "warn",
     "no-undef"                : "off",
@@ -63,7 +69,7 @@
     ],
     "complexity"              : [
       "warn",
-      5
+      15
     ],
     "radix"                   : "off",
     "consistent-return"       : "error",

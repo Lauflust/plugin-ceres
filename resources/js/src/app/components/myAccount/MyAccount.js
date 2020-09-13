@@ -1,4 +1,6 @@
-Vue.component("my-account", {
+import Vue from "vue";
+
+export default Vue.component("my-account", {
 
     template: `
     <div>
@@ -12,7 +14,7 @@ Vue.component("my-account", {
         {
             type: Array,
             default: () =>
-            []
+                []
         },
         selectedDeliveryAddress:
         {
@@ -23,7 +25,7 @@ Vue.component("my-account", {
         {
             type: Array,
             default: () =>
-            []
+                []
         },
         selectedBillingAddress:
         {

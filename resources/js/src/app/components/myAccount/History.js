@@ -1,4 +1,14 @@
-Vue.component("history", {
+import Vue from "vue";
+import OrderHistory from "./OrderHistory";
+import OrderReturnHistory from "./OrderReturnHistory";
+
+export default Vue.component("history", {
+
+    components:
+    {
+        OrderHistory,
+        OrderReturnHistory
+    },
 
     props: {
         template: String,
@@ -12,11 +22,6 @@ Vue.component("history", {
         return {
             returnsFirstOpened: false
         };
-    },
-
-    created()
-    {
-        this.$options.template = this.template;
     },
 
     methods:

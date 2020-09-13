@@ -1,8 +1,15 @@
 {% import "Ceres::Widgets.Helper.TwigBuilder" as Twig %}
+{% import "Ceres::Widgets.Helper.WidgetHelper" as WidgetHelper %}
+
+{% set customClass = widget.settings.customClass.mobile %}
+{% set spacingSettings = widget.settings.spacing %}
+{% set inlineSpacings = WidgetHelper.getInlineSpacings(spacingSettings, spacingSettings.customPadding.mobile, spacingSettings.customMargin.mobile) %}
+{% set spacingClasses = WidgetHelper.getSpacingClasses(spacingSettings, spacingSettings.customPadding.mobile, spacingSettings.customMargin.mobile) %}
 
 {% set isFixed              = widget.settings.isFixed.mobile %}
 {% set navigationStyle      = widget.settings.navigationStyle.mobile %}
 {% set companyLogoUrl       = widget.settings.companyLogoUrl.mobile %}
+{% set fallbackImagePath    = widget.settings.fallbackImagePath.mobile %}
 {% set megaMenuLevels       = widget.settings.megaMenuLevels.mobile %}
 {% set megaMenuMaxItems1    = widget.settings.megaMenuMaxItems.stage1.mobile | default(30) %}
 {% set megaMenuMaxItems2    = widget.settings.megaMenuMaxItems.stage2.mobile | default(3) %}
@@ -10,31 +17,41 @@
 {% set megaMenuMaxItems     = { "1": megaMenuMaxItems1, "2": megaMenuMaxItems2, "3": megaMenuMaxItems3 } %}
 
 {% if companyLogoUrl is empty %}
-    {% set companyLogoUrl = plugin_path('Ceres') ~ "/images/ceres-logo.svg" %}
+    {% set companyLogoUrl = ceresConfig.header.companyLogo %}
+    {% if not (companyLogoUrl starts with 'https://' or companyLogoUrl starts with 'http://' or companyLogoUrl starts with 'layout/') %}
+        {% set companyLogoUrl = plugin_path('Ceres') ~ "/" ~ image %}
+    {% endif %}
+{% endif %}
+
+{% if fallbackImagePath | trim is empty %}
+    {% set fallbackImagePath = companyLogoUrl %}
 {% endif %}
 
 {{ Twig.import("Tree", "Ceres::Category.Macros.CategoryTree") }}
 
-<nav class="widget-fw navbar{% if navigationStyle == 'megaMenu' %} megamenu{%endif%}{% if not isFixed %} unfixed{% endif %}">
-    <div class="container-max">
-        <div class="row mx-0">
-            <div class="brand-wrapper">
-                <a class="navbar-brand float-lg-left" href="{{ Twig.print('urls.home') }}">
-                    <img alt="{{ Twig.print('trans("Ceres::Template.headerCompanyName")') }}" src="{{ companyLogoUrl }}" class="img-fluid" />
+<nav class="navbar header-fw p-0 border-bottom{% if customClass | length > 0 %} {{ customClass }}{% endif %}{% if navigationStyle == 'megaMenu' %} megamenu{% else %} normalmenu{%endif%}{% if not isFixed %} unfixed{% endif %}">
+    <div class="container-max d-block{% if spacingClasses | length > 0 %} {{ spacingClasses }}{% endif %}"
+    {% if inlineSpacings | length > 0 %} style="{{ inlineSpacings }}"{% endif %}>
+        <div class="row mx-0 position-relative d-flex">
+            <div class="brand-wrapper px-lg-3">
+                <a class="navbar-brand py-2" href="{{ Twig.print('urls.home') }}">
+                    <picture>
+                        <source srcset="{{ companyLogoUrl }}"{% if companyLogoUrl matches '/.?(\\.webp)(?:$|\\?)/' %} type="image/webp"{% endif %}>
+                        <img
+                            class="img-fluid"
+                            src="{{ fallbackImagePath }}"
+                            alt="{{ Twig.print('trans("Ceres::Template.headerCompanyName")') }}"
+                        />
+                    </picture>
                 </a>
 
-                <button id="btnMainMenuToggler" v-open-mobile-navigation class="navbar-toggler d-lg-none" type="button">
+                <button v-open-mobile-navigation class="navbar-toggler d-lg-none p-3" type="button">
                     &#9776;
                 </button>
             </div>
 
-            <div id="mainNavbarCollapsable">
-                <ul class="breadcrumb">
-                    <li class="btnClose"></li>
-                </ul>
-
-
-                <ul class="mainmenu float-lg-right">
+            <div class="main-navbar-collapsable d-none d-lg-block">
+                <ul class="mainmenu p-0 m-0 d-flex">
                     {{ Twig.print(Twig.call("Tree.get_nav_bar", [Twig.var("categories"), "", megaMenuLevels, megaMenuMaxItems])) }}
                 </ul>
             </div>

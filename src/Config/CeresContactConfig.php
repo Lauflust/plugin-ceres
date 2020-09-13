@@ -2,63 +2,69 @@
 
 namespace Ceres\Config;
 
-use IO\Helper\PluginConfig;
-use Plenty\Plugin\ConfigRepository;
+use Plenty\Modules\Webshop\Helpers\PluginConfig;
 
+/**
+ * Class CeresContactConfig
+ * @package Ceres\Config
+ *
+ * @deprecated since 4.4.0. This class will be removed in 5.0.0
+ */
 class CeresContactConfig extends PluginConfig
 {
     public $shopMail;
-    public $openingTimes;
-    public $openingTimes_en;
+    public $mailCC;
+    public $mailBCC;
     public $showData;
     public $apiKey;
     public $mapZoom;
     public $mapShowInMobile;
     public $enableConfirmingPrivacyPolicy;
 
-    public function __construct(ConfigRepository $configRepository)
+    protected function getPluginName()
     {
-        parent::__construct($configRepository, "Ceres");
+        return 'Ceres';
+    }
 
-        $this->shopMail = $this->getTextValue( "contact.shop_mail", "");
-
-        $this->openingTimes = $this->getTextValue("contact.opening_times", "Montag - Freitag, 00:00 - 24:00" );
-
-        $this->openingTimes_en = $this->getTextValue("contact.en.opening_times", "Monday - Friday, 00:00 - 24:00" );
+    protected function load()
+    {
+        $this->shopMail = $this->getTextValue('contact.shop_mail', '', 'your@email.com');
+        $this->mailCC = $this->getTextValue('contact.shop_mail_cc', '');
+        $this->mailBCC = $this->getTextValue('contact.shop_mail_bcc', '');
 
         $this->showData = $this->getMultiSelectValue(
-            "contact.show_data",
+            'contact.show_data',
             [
-                "name",
-                "ceo",
-                "city",
-                "country",
-                "email",
-                "fax",
-                "fon",
-                "hotline",
-                "street",
-                "vatNumber",
-                "zip",
-                "timezone",
-                "opening_times"
+                'name',
+                'ceo',
+                'city',
+                'country',
+                'email',
+                'fax',
+                'fon',
+                'hotline',
+                'street',
+                'vatNumber',
+                'zip',
+                'timezone',
+                'opening_times'
             ],
             [
-                "street",
-                "zip",
-                "city",
-                "hotline",
-                "email",
-                "opening_times"
+                'street',
+                'zip',
+                'city',
+                'hotline',
+                'email',
+                'opening_times'
             ]
         );
 
-        $this->apiKey = $this->getTextValue( "contact.api_key", "" );
+        $this->apiKey = $this->getTextValue('contact.api_key', '', 'API key');
 
-        $this->mapZoom = $this->getIntegerValue( "contact.map_zoom", 16 );
+        $this->mapZoom = $this->getIntegerValue('contact.map_zoom', 16);
 
-        $this->mapShowInMobile = $this->getBooleanValue( "contact.map_show_in_mobile", false );
+        $this->mapShowInMobile = $this->getBooleanValue('contact.map_show_in_mobile', false);
 
-        $this->enableConfirmingPrivacyPolicy = $this->getBooleanValue( "contact.enable_confirming_privacy_policy", true );
+        $this->enableConfirmingPrivacyPolicy = $this->getBooleanValue('contact.enable_confirming_privacy_policy', true);
     }
 }

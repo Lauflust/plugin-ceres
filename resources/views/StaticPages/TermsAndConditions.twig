@@ -3,9 +3,11 @@
 {% import "Ceres::PageDesign.Macros.LayoutContainer" as LayoutContainer %}
 
 {% block PartialHead %}
-    <meta name="description" content="{{ trans('Ceres::Template.termsAndConditionsMetaDescription') }}">
-    <meta name="robots" content="{{ config("Ceres.meta.robots_terms_and_conditions") }}">
-    <title>{{ trans("Ceres::Template.termsAndConditions") }} | {{ trans("Ceres::Template.headerCompanyName") }}</title>
+    {% embed getPartial('page-metadata') %}
+        {% block title          trans("Ceres::Template.termsAndConditions") %}
+        {% block description    trans('Ceres::Template.termsAndConditionsMetaDescription') %}
+        {% block robots         ceresConfig.meta.robotsTermsAndConditions %}
+    {% endembed %}
 {% endblock %}
 
 {% block PageBody %}
@@ -24,7 +26,7 @@
                 {% if termsAndConditions.htmlText %}
                     {{ termsAndConditions.htmlText | raw }}
                 {% else %}
-                    <p class="static-page-plain-text">{{ termsAndConditions.plainText }}</p>
+                    <p>{{ termsAndConditions.plainText }}</p>
                 {% endif %}
 
                 {{ LayoutContainer.show("Ceres::StaticPages.TermsAndConditions") }}

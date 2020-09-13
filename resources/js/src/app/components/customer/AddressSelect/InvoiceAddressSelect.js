@@ -1,9 +1,15 @@
-import TranslationService from "services/TranslationService";
-const NotificationService = require("services/NotificationService");
+import TranslationService from "../../../services/TranslationService";
+import Vue from "vue";
+import { mapState } from "vuex";
+import { error } from "../../../services/NotificationService";
+import AddressSelect from "./AddressSelect";
 
-Vue.component("invoice-address-select", {
+export default Vue.component("invoice-address-select", {
 
-    delimiters: ["${", "}"],
+    components:
+    {
+        AddressSelect
+    },
 
     template: `
         <address-select 
@@ -12,32 +18,53 @@ Vue.component("invoice-address-select", {
             address-type="1"
             :show-error="showError"
             :optional-address-fields="optionalAddressFields"
-            :required-address-fields="requiredAddressFields">
+            :required-address-fields="requiredAddressFields"
+            :default-salutation="defaultSalutation"
+            :padding-classes="paddingClasses"
+            :padding-inline-styles="paddingInlineStyles">
         </address-select>
     `,
 
     props: {
-        optionalAddressFields: {
+        optionalAddressFields:
+        {
             type: Object,
             default: () =>
             {
                 return {};
             }
         },
-        requiredAddressFields: {
+        requiredAddressFields:
+        {
             type: Object,
             default: () =>
             {
                 return {};
             }
         },
-        hasToValidate: {
+        defaultSalutation:
+        {
+            type: String,
+            default: "male"
+        },
+        hasToValidate:
+        {
             type: Boolean,
             default: false
+        },
+        paddingClasses:
+        {
+            type: String,
+            default: null
+        },
+        paddingInlineStyles:
+        {
+            type: String,
+            default: null
         }
     },
 
-    computed: Vuex.mapState({
+    computed: mapState({
         billingAddressId: state => state.address.billingAddressId,
         billingAddressList: state => state.address.billingAddressList,
         showError: state => state.checkout.validation.invoiceAddress.showError
@@ -101,7 +128,7 @@ Vue.component("invoice-address-select", {
 
             if (showError)
             {
-                NotificationService.error(
+                error(
                     TranslationService.translate("Ceres::Template.checkoutCheckInvoiceAddress")
                 );
             }

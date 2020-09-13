@@ -1,4 +1,11 @@
-Vue.component("order-return-history-list-item", {
+import Vue from "vue";
+import OrderReturnSetComponentList from "../orderReturn/OrderReturnSetComponentList.vue";
+
+export default Vue.component("order-return-history-list-item", {
+
+    components: {
+        OrderReturnSetComponentList
+    },
 
     props: {
         template:
@@ -15,7 +22,7 @@ Vue.component("order-return-history-list-item", {
     },
 
     data()
-	{
+    {
         return {
             itemsToRender: [],
             showAllOrderItems: false
@@ -24,7 +31,6 @@ Vue.component("order-return-history-list-item", {
 
     created()
     {
-        this.$options.template = this.template;
         this.itemsToRender = this.returnOrder.order.orderItems.slice(0, 5);
     },
 

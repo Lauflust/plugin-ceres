@@ -6,8 +6,14 @@
         {% if buttonReplacement|trim is not empty %}
             {{ buttonReplacement }}
         {% else %}
-            <button class="btn btn-block btn-primary btn-appearance" :class="buttonClasses" @click="placeOrder()" :disabled="waiting || isBasketLoading || !isBasketInitiallyLoaded">
-                <i v-waiting-animation="waiting" class="fa fa-arrow-right" aria-hidden="true"></i> {{ trans("Ceres::Template.checkoutBuyNow") }}
+            <button
+                class="btn btn-block btn-primary btn-appearance"
+                :class="buttonClasses"
+                :style="paddingInlineStyles"
+                @click="placeOrder()"
+                :disabled="waiting || isBasketLoading || !isBasketInitiallyLoaded">
+                <icon icon="arrow-right" :loading="waiting"></icon>
+                {{ trans("Ceres::Template.checkoutBuyNow") }}
             </button>
         {% endif %}
     </div>

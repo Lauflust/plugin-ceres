@@ -1,6 +1,8 @@
-import ApiService from "services/ApiService";
+import Vue from "vue";
+import TranslationService from "../../services/TranslationService";
+const ApiService = require("../../services/ApiService");
 
-Vue.component("order-history-list-item", {
+export default Vue.component("order-history-list-item", {
 
     props:
     {
@@ -40,11 +42,6 @@ Vue.component("order-history-list-item", {
         };
     },
 
-    created()
-    {
-        this.$options.template = this.template;
-    },
-
     methods:
     {
         loadOrderDetailTemplate()
@@ -78,6 +75,11 @@ Vue.component("order-history-list-item", {
                         this.waiting = true;
                     });
             }
+        },
+
+        getWarrantyTooltip(referenceOrderId)
+        {
+            return TranslationService.translate("Ceres::Template.orderHistoryWarranty", { id: referenceOrderId });
         }
     }
 });

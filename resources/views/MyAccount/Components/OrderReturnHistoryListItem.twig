@@ -30,12 +30,33 @@
             <div class="col-sm-12 item py-2" v-for="orderItem in itemsToRender">
                 <div class="row">
                     <div class="col-sm-12">
-                        <a class="d-inline-block" :href="returnOrder.itemURLs[orderItem.itemVariationId]">
+                        <a class="align-top d-inline-block" :href="returnOrder.itemURLs[orderItem.itemVariationId]">
                             <img :src="returnOrder.itemImages[orderItem.itemVariationId]" :alt=" orderItem | itemBundleName " :title="orderItem | itemBundleName">
                         </a>
-                        <div class="d-inline-block item-description">
+                        <div class="d-inline-block item-description pl-3">
                             <div><a class="text-primary text-appearance" :href="returnOrder.itemURLs[orderItem.itemVariationId]">${ orderItem | itemBundleName }</a></div>
                             <div>{{ trans("Ceres::Template.returnHistoryQuantity") }}: ${ orderItem.quantity}</div>
+
+                            <div v-for="attribute in orderItem.attributes">
+                                <strong>${ attribute.name }: </strong>
+                                <span>${ attribute.value }</span>
+                            </div>
+
+                            <template v-if="orderItem.orderProperties && orderItem.orderProperties[0]">
+                                <div v-for="property in orderItem.orderProperties">
+                                    <b>${ property.name }</b>
+                                    <span v-if="property.type === 'file'">
+                                        <a :href="property.value | fileUploadPath" target="_blank" class="text-primary text-appearance">
+                                            <i class="fa fa-external-link" aria-hidden="true"></i>
+                                            ${ property.value | fileName }
+                                        </a>
+                                    </span>
+                                    <span v-else-if="property.type === 'selection'">: ${ property.selectionValueName }</span>
+                                    <span v-else-if="!!property.type">: ${ property.value }</span>
+                                </div>
+                            </template>
+
+                            <order-return-set-component-list v-if="orderItem.setComponents" :set-components="orderItem.setComponents" :variations="returnOrder.variations"></order-return-set-component-list>
                         </div>
                     </div>
                 </div> 

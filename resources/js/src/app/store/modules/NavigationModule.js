@@ -1,7 +1,13 @@
+import { isNullOrUndefined } from "../../helper/utils";
+
+const ApiService = require("../../services/ApiService");
+
 const state =
     {
         tree: [],
-        currentCategory: null
+        cachedTrees: {},
+        currentCategory: null,
+        categoryChildren: []
     };
 
 const mutations =
@@ -14,71 +20,63 @@ const mutations =
         setCurrentCategory(state, category)
         {
             state.currentCategory = category;
+        },
+
+        addCachedPartialTree(state, { tree, categoryId })
+        {
+            state.cachedTrees[categoryId] = tree;
+        },
+
+        addCategoryChildren(state, children)
+        {
+            for (const category of children)
+            {
+                if (!state.categoryChildren.find(cat => cat.id === category.id))
+                {
+                    state.categoryChildren.push(category);
+                }
+            }
         }
     };
 
 const actions =
     {
-        initNavigationTree({ dispatch, commit }, navigationTree)
+        loadPartialNavigationTree({ dispatch, commit, state }, categoryId)
         {
-            if (navigationTree)
+            return new Promise((resolve, reject) =>
             {
-                dispatch("buildNavigationTreeItem", { navigationTree });
-            }
-
-            commit("setNavigationTree", navigationTree);
+                if (isNullOrUndefined(state.cachedTrees[categoryId]))
+                {
+                    ApiService
+                        .get("/rest/io/categorytree", { type: App.config.header.showCategoryTypes, categoryId })
+                        .done(response =>
+                        {
+                            dispatch("buildNavigationTreeItem", { navigationTree: response });
+                            commit("addCachedPartialTree", { tree: response, categoryId });
+                            resolve(response);
+                        })
+                        .fail(error =>
+                        {
+                            reject(error);
+                        });
+                }
+                else
+                {
+                    resolve(state.cachedTrees[categoryId]);
+                }
+            });
         },
 
-        buildNavigationTreeItem({ state, commit, dispatch }, { navigationTree, parent })
+        buildNavigationTreeItem({ dispatch }, { navigationTree, parent })
         {
-            let showChildren = false;
-
             for (const category of navigationTree)
             {
                 category.parent = parent;
 
-                // hide category if there is no translation
-                if (!category.details[0])
+                if (category.children)
                 {
-                    category.hideCategory = true;
+                    dispatch("buildNavigationTreeItem", { navigationTree: category.children, parent: category });
                 }
-                else
-                {
-                    let parentUrl = "";
-
-                    if (parent)
-                    {
-                        parentUrl = parent.url;
-
-                        if (App.urlTrailingSlash)
-                        {
-                            parentUrl = parentUrl.substring(0, parentUrl.length - 1);
-                        }
-                    }
-                    else if (App.defaultLanguage != category.details[0].lang)
-                    {
-                        parentUrl = "/" + category.details[0].lang;
-                    }
-
-                    category.url = parentUrl + "/" + category.details[0].nameUrl;
-
-                    if (App.urlTrailingSlash)
-                    {
-                        category.url += "/";
-                    }
-
-                    showChildren = true;
-
-                    if (category.children)
-                    {
-                        dispatch("buildNavigationTreeItem", { navigationTree: category.children, parent: category });
-                    }
-                }
-            }
-
-            if (parent)
-            {
-                parent.showChildren = showChildren;
             }
         },
 
@@ -98,6 +96,24 @@ const actions =
                     dispatch("setCurrentCategoryById", { categoryId, categories: category.children });
                 }
             }
+        },
+
+        loadCategoryChildrenChunk({ state, commit }, { categoryId, size })
+        {
+            return new Promise((resolve, reject) =>
+            {
+                ApiService
+                    .get("/rest/io/categorytree/children", { categoryId, indexStart: state.categoryChildren.length, maxCount: size })
+                    .done(response =>
+                    {
+                        commit("addCategoryChildren", response);
+                        resolve(response);
+                    })
+                    .fail(error =>
+                    {
+                        reject(error);
+                    });
+            });
         }
     };
 

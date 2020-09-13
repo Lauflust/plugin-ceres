@@ -1,24 +1,35 @@
-import { isNull, isDefined } from "../../../helper/utils";
+import { isDefined } from "../../../helper/utils";
+import ValidationService from "../../../services/ValidationService";
+import TranslationService from "../../../services/TranslationService";
+import Vue from "vue";
+import { mapState } from "vuex";
+import CreateUpdateAddress from "./CreateUpdateAddress/CreateUpdateAddress";
 
-const ApiService = require("services/ApiService");
-const ModalService = require("services/ModalService");
+const ApiService = require("../../../services/ApiService");
+const ModalService = require("../../../services/ModalService");
 
-import ValidationService from "services/ValidationService";
-import TranslationService from "services/TranslationService";
+export default Vue.component("address-select", {
 
-Vue.component("address-select", {
+    components:
+    {
+        CreateUpdateAddress
+    },
 
-    props: {
-        template: {
+    props:
+    {
+        template:
+        {
             type: String,
             default: "#vue-address-select"
         },
-        addressType: {
+        addressType:
+        {
             type: String,
             required: true
         },
         showError: Boolean,
-        optionalAddressFields: {
+        optionalAddressFields:
+        {
             type: Object,
             default: () =>
             {
@@ -28,12 +39,28 @@ Vue.component("address-select", {
                 };
             }
         },
-        requiredAddressFields: {
+        requiredAddressFields:
+        {
             type: Object,
             default: () =>
             {
                 return {};
             }
+        },
+        defaultSalutation:
+        {
+            type: String,
+            default: "male"
+        },
+        paddingClasses:
+        {
+            type: String,
+            default: null
+        },
+        paddingInlineStyles:
+        {
+            type: String,
+            default: null
         }
     },
 
@@ -44,8 +71,7 @@ Vue.component("address-select", {
             modalType      : "",
             headline       : "",
             addressToEdit  : {
-                addressSalutation: 0,
-                gender: "male",
+                gender: this.defaultSalutation,
                 countryId        : this.shippingCountryId
             },
             addressToDelete: {},
@@ -55,6 +81,7 @@ Vue.component("address-select", {
             {
                 1: "vatNumber",
                 4: "telephone",
+                6: "postNumber",
                 9: "birthday",
                 11: "title",
                 12: "contactPerson"
@@ -103,9 +130,10 @@ Vue.component("address-select", {
             return this.optionalAddressFields[countryKey].includes(`${addressKey}.salutation`);
         },
 
-        ...Vuex.mapState({
+        ...mapState({
+            countryList: state => state.localization.shippingCountries,
             isBasketLoading: state => state.basket.isBasketLoading,
-            countryList: state => state.localization.shippingCountries
+            isCheckoutReadonly: state => state.checkout.readOnly
         })
     },
 
@@ -114,7 +142,6 @@ Vue.component("address-select", {
      */
     created()
     {
-        this.$options.template = this.template;
         this.addEventListener();
     },
 
@@ -161,8 +188,7 @@ Vue.component("address-select", {
             if (this.isSalutationEnabled)
             {
                 this.addressToEdit = {
-                    addressSalutation: 0,
-                    gender: "male",
+                    gender: this.defaultSalutation,
                     countryId: this.shippingCountryId,
                     showPickupStation: false
                 };
@@ -190,20 +216,6 @@ Vue.component("address-select", {
         {
             this.modalType = "update";
             this.addressToEdit = this.getAddressToEdit(address);
-
-            if (this.addressToEdit.gender === "female")
-            {
-                this.addressToEdit.addressSalutation = 1;
-            }
-            else if (isNull(this.addressToEdit.gender) && this.addressToEdit.name1)
-            {
-                this.addressToEdit.addressSalutation = 2;
-            }
-            else
-            {
-                this.addressToEdit.addressSalutation = 0;
-                this.addressToEdit.gender = "male";
-            }
 
             if (isDefined(this.addressToEdit.address1) && (this.addressToEdit.address1 === "PACKSTATION" || this.addressToEdit.address1 === "POSTFILIALE") && this.$store.getters.isParcelOrOfficeAvailable)
             {
@@ -375,7 +387,7 @@ Vue.component("address-select", {
         {
             if (!newVal)
             {
-                delete this.addressToEdit.addressSalutation;
+                delete this.addressToEdit.gender;
             }
         }
     }

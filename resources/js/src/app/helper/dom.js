@@ -38,6 +38,7 @@ export function is(element, selector)
             function(sel)
             {
                 const matches = (this.document || this.ownerDocument).querySelectorAll(sel);
+
                 let i = matches.length;
 
                 // eslint-disable-next-line brace-style
@@ -93,4 +94,20 @@ export function applyStyles(el, styles)
             el.style[key] = value;
         }
     });
+}
+
+export function getStyle(el, styleProp)
+{
+    let value;
+
+    if (window.getComputedStyle)
+    {
+        value = document.defaultView.getComputedStyle(el, null).getPropertyValue(styleProp);
+    }
+    else if (el.currentStyle)
+    {
+        value = el.currentStyle[styleProp];
+    }
+
+    return value;
 }
